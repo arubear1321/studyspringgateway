@@ -1,0 +1,37 @@
+server:
+  port: 11001
+  shutdown: graceful
+
+spring:
+  application:
+    name: api-gateway
+  lifecycle:
+    timeout-per-shutdown-phase: 60s
+  cloud:
+    gateway:
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedHeaders: "*"
+            allowedMethods:
+              - GET
+              - POST
+              - OPTION
+              - PUT
+      routes:
+        - id: api
+          uri: http://127.0.0.1:11002
+          predicates:
+            - Path=/api/**
+          filters:
+            - LoggingFilter
+
+logging:
+  level:
+    root: TRACE
+    org.springframework.security: TRACE
+
+
